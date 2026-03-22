@@ -8,26 +8,39 @@ const AudioPlayer = ({ src }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [error, setError] = useState(false);
 
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     setIsPlaying(false);
     setProgress(0);
     setCurrentTime(0);
     setError(false);
+    setIsReady(false);
+    
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
   }, [src]);
 
   const formatTime = (time) => {
-    if (isNaN(time)) return '0:00';
+    if (isNaN(time) || time === Infinity) return '0:00';
     const mins = Math.floor(time / 60);
     const secs = Math.floor(time % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || error) return;
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch(() => setError(true));
+      audioRef.current.play().catch((e) => {
+        console.error("Audio play error:", e);
+        // Alert if blocked by browser autoplay policy
+        if (e.name === 'NotAllowedError') {
+          alert("Trình duyệt chặn tự động phát. Hãy nhấn Play lần nữa.");
+        }
+      });
     }
     setIsPlaying(!isPlaying);
   };
@@ -37,17 +50,21 @@ const AudioPlayer = ({ src }) => {
     const current = audioRef.current.currentTime;
     const dur = audioRef.current.duration;
     setCurrentTime(current);
-    setProgress(dur ? (current / dur) * 100 : 0);
+    if (dur && dur !== Infinity) {
+      setProgress((current / dur) * 100);
+    }
   };
 
-  const handleLoadedMetadata = () => {
+  const handleCanPlay = () => {
+    setIsReady(true);
+    setError(false);
     if (audioRef.current) {
       setDuration(audioRef.current.duration);
     }
   };
 
   const handleProgressClick = (e) => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || !isReady) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
     audioRef.current.currentTime = percent * audioRef.current.duration;
@@ -60,13 +77,13 @@ const AudioPlayer = ({ src }) => {
   };
 
   const rewind = () => {
-    if (audioRef.current) {
+    if (audioRef.current && isReady) {
       audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 5);
     }
   };
 
   const forward = () => {
-    if (audioRef.current) {
+    if (audioRef.current && isReady) {
       audioRef.current.currentTime = Math.min(
         audioRef.current.duration,
         audioRef.current.currentTime + 5
@@ -75,29 +92,52 @@ const AudioPlayer = ({ src }) => {
   };
 
   return (
-    <div className="glass-card p-4 mb-6 animate-fade-in-up">
+    <div className="glass-card p-4 mb-6 animate-fade-in-up shadow-lg border border-white/10 group/player">
       <audio
         ref={audioRef}
         src={src}
         onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
+        onCanPlay={handleCanPlay}
         onEnded={handleEnded}
-        onError={() => setError(true)}
+        onError={(e) => {
+          console.error("Audio element error:", e);
+          setError(true);
+        }}
+        preload="auto"
       />
 
       {/* Audio label */}
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 ${isPlaying ? 'bg-primary animate-pulse shadow-primary/40' : 'bg-gradient-to-br from-primary to-accent shadow-lg'}`}>
+          <svg className={`w-4 h-4 text-white transition-transform ${isPlaying ? 'scale-110' : ''}`} fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
           </svg>
         </div>
-        <span className="text-sm text-text-secondary font-medium">Audio Listening</span>
-        {error && (
-          <span className="text-xs text-warning ml-auto">
-            ⚠️ Audio chưa sẵn sàng
-          </span>
-        )}
+        <div>
+          <span className="text-sm font-semibold text-text-primary block leading-none">Audio Listening</span>
+          <span className="text-[10px] text-text-muted uppercase tracking-wider">A2 Cambridge</span>
+        </div>
+        
+        <div className="ml-auto">
+          {error ? (
+            <span className="px-2 py-0.5 bg-red-500/10 text-red-500 text-[10px] font-bold rounded-full border border-red-500/20 animate-bounce">
+              ⚠️ LỖI FILE
+            </span>
+          ) : !isReady ? (
+            <span className="px-2 py-0.5 bg-primary/10 text-primary-light text-[10px] font-bold rounded-full border border-primary/20 flex items-center gap-1">
+              <span className="w-1 h-1 bg-primary rounded-full animate-ping"></span>
+              ĐANG TẢI...
+            </span>
+          ) : isPlaying ? (
+            <span className="px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold rounded-full border border-success/20">
+              ĐANG PHÁT
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 bg-surface-lighter text-text-muted text-[10px] font-bold rounded-full border border-white/5">
+              SẴN SÀNG
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Progress bar */}
