@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 const AudioPlayer = ({ src }) => {
   const audioRef = useRef(null);
@@ -12,18 +12,6 @@ const AudioPlayer = ({ src }) => {
   
   // --- CẤU HÌNH BẬT/TẮT AUDIO (Sửa giá trị ở đây: true = Bật, false = Tắt) ---
   const isEnabled = false; 
-
-  useEffect(() => {
-    setIsPlaying(false);
-    setProgress(0);
-    setCurrentTime(0);
-    setError(false);
-    setIsReady(false);
-    
-    if (audioRef.current && isEnabled) {
-      audioRef.current.load();
-    }
-  }, [src, isEnabled]);
 
   const formatTime = (time) => {
     if (isNaN(time) || time === Infinity) return '0:00';

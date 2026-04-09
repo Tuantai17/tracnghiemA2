@@ -9,27 +9,6 @@ const FillInGroupCard = ({ group, answers, onSelectAnswer, showResult }) => {
     onSelectAnswer(questionId, value);
   };
 
-  const getStatusClass = (questionId, isExample) => {
-    if (isExample) return '';
-    const answerKey = `${questionId}-${partId}`;
-    const value = answers[answerKey] || '';
-    
-    // Logic below if we implement correct answers
-    // Right now everything is just manually scored or has no correct key
-    if (showResult) {
-      // Not implemented full logic for matching text yet (requires regex or multiple possible answers)
-      // We will just show what user entered, maybe a neutral style
-      return 'border-surface-lighter text-text-primary bg-surface-light/30';
-    }
-    
-    // Focus ring styling done by Tailwind
-    if (value.trim() !== '') {
-      return 'border-primary ring-1 ring-primary/30 bg-primary/5 text-text-primary';
-    }
-
-    return 'border-surface-lighter bg-surface-light/50 text-text-primary';
-  };
-
   return (
     <div className="animate-fade-in-up">
       {/* Header / Intro */}
@@ -56,7 +35,7 @@ const FillInGroupCard = ({ group, answers, onSelectAnswer, showResult }) => {
 
           {/* The Form Table */}
           <div className="space-y-4 sm:space-y-5 max-w-3xl mx-auto px-2 sm:px-0">
-            {items.map((item, idx) => {
+            {items.map((item) => {
               const isExample = item.isExample;
               const answerKey = `${item.id}-${partId}`;
               const value = answers[answerKey] || '';

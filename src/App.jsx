@@ -3,6 +3,8 @@ import TestList from './components/TestList';
 import PartSelector from './components/PartSelector';
 import QuizScreen from './components/QuizScreen';
 import testsData from './data/testsData';
+import readingWritingTestsData from './data/readingWritingTestsData';
+import readingWritingQuyen2Data from './data/readingWritingQuyen2Data';
 import './index.css';
 
 /**
@@ -12,6 +14,7 @@ import './index.css';
  * 3. QuizScreen → làm bài → ResultScreen
  */
 const App = () => {
+  const allTests = [...readingWritingTestsData, ...readingWritingQuyen2Data, ...testsData];
   const [screen, setScreen] = useState('home'); // 'home' | 'parts' | 'quiz'
   const [selectedTest, setSelectedTest] = useState(null);
   const [selectedPart, setSelectedPart] = useState(null);
@@ -49,7 +52,7 @@ const App = () => {
       <div className="relative z-10 max-w-3xl mx-auto px-4 py-6 sm:py-8">
         {screen === 'home' && (
           <TestList
-            tests={testsData}
+            tests={allTests}
             onSelectTest={handleSelectTest}
           />
         )}

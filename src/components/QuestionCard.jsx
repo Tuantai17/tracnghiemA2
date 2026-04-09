@@ -1,6 +1,4 @@
-import { useState } from 'react';
-
-const QuestionCard = ({ question, questionIndex, totalQuestions, selectedAnswer, onSelectAnswer, showResult, partType, optionsType }) => {
+const QuestionCard = ({ question, selectedAnswer, onSelectAnswer, showResult, partType, optionsType }) => {
   const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
   const getOptionStyle = (optIndex) => {

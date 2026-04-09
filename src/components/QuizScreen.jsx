@@ -1,128 +1,126 @@
-import { useState, useCallback } from 'react';
-import AudioPlayer from './AudioPlayer';
-import QuestionCard from './QuestionCard';
-import ProgressBar from './ProgressBar';
-import ResultScreen from './ResultScreen';
-import MatchingGroupCard from './MatchingGroupCard';
-import MultipleChoiceGroupCard from './MultipleChoiceGroupCard';
-import FillInGroupCard from './FillInGroupCard';
+import { useState } from "react";
+import AudioPlayer from "./AudioPlayer";
+import FillInGroupCard from "./FillInGroupCard";
+import InfoExtractGroupCard from "./InfoExtractGroupCard";
+import LetterGapFillCard from "./LetterGapFillCard";
+import MatchingGroupCard from "./MatchingGroupCard";
+import MultipleChoiceGroupCard from "./MultipleChoiceGroupCard";
+import ProgressBar from "./ProgressBar";
+import QuestionCard from "./QuestionCard";
+import ResultScreen from "./ResultScreen";
+import WordBuilderGroupCard from "./WordBuilderGroupCard";
+import WritingPromptCard from "./WritingPromptCard";
+
+const GROUP_TYPES = new Set([
+  "matching",
+  "multiple-choice-group",
+  "fill-in-group",
+  "word-builder",
+  "letter-gap-fill",
+  "info-extract",
+  "writing-task",
+]);
 
 const QuizScreen = ({ test, part, onGoBack, onGoHome }) => {
-  // Map questions into pages (groups)
-  // For normal mixed parts, each question is a page.
-  // For matching, multiple-choice-group, or fill-in-group part, the whole part is a SINGLE page.
+  const sourceParts = part === "all" ? test.parts : [part];
   const allGroups = [];
-  const sourceChunks = part === 'all' ? test.parts : [part];
-  
-  sourceChunks.forEach(p => {
-    if (p.type === 'matching' || p.type === 'multiple-choice-group' || p.type === 'fill-in-group') {
+
+  sourceParts.forEach((sourcePart) => {
+    if (GROUP_TYPES.has(sourcePart.type)) {
       allGroups.push({
-        isMatchingGroup: p.type === 'matching',
-        isMultipleChoiceGroup: p.type === 'multiple-choice-group',
-        isFillInGroup: p.type === 'fill-in-group',
-        partId: p.id,
-        partTitle: p.title,
-        audio: p.audio,
-        partType: p.type,
-        matchingData: p.matchingData,
-        fillInData: p.fillInData,
-        example: p.example,
-        questions: p.questions,
-        description: p.description
+        partId: sourcePart.id,
+        partTitle: sourcePart.title,
+        partType: sourcePart.type,
+        audio: sourcePart.audio,
+        description: sourcePart.description,
+        questions: sourcePart.questions,
+        matchingData: sourcePart.matchingData,
+        fillInData: sourcePart.fillInData,
+        passage: sourcePart.passage,
+        example: sourcePart.example,
+        letterData: sourcePart.letterData,
+        infoData: sourcePart.infoData,
+        writingData: sourcePart.writingData,
       });
-    } else {
-      p.questions.forEach(q => {
-        allGroups.push({
-           ...q,
-           partId: p.id,
-           partTitle: p.title,
-           audio: p.audio,
-           partType: p.type,
-           optionsType: p.optionsType || q.optionsType
-        });
-      });
+      return;
     }
+
+    sourcePart.questions.forEach((question) => {
+      allGroups.push({
+        ...question,
+        partId: sourcePart.id,
+        partTitle: sourcePart.title,
+        audio: sourcePart.audio,
+        partType: sourcePart.type,
+        optionsType: sourcePart.optionsType || question.optionsType,
+      });
+    });
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [showResult, setShowResult] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
   const currentGroup = allGroups[currentIndex];
-  const totalPages = allGroups.length; 
-
-  // Track audio
+  const totalPages = allGroups.length;
   const currentAudio = currentGroup?.audio;
+  const isSingleQuestion = !GROUP_TYPES.has(currentGroup?.partType);
 
-  // Xử lý chọn đáp án câu Trắc nghiệm
-  const handleSelectAnswerSingle = useCallback((optIndex) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [currentGroup.id + '-' + currentGroup.partId]: optIndex,
+  const handleSelectAnswerSingle = (optionIndex) => {
+    setAnswers((previous) => ({
+      ...previous,
+      [`${currentGroup.id}-${currentGroup.partId}`]: optionIndex,
     }));
-  }, [currentGroup]);
+  };
 
-  // Xử lý chọn đáp án câu Nhóm (Matching / MCQ Group / Fill-in Group)
-  const handleSelectAnswerGroup = useCallback((questionId, value) => {
-    setAnswers((prev) => {
-      const newAnswers = { ...prev };
-      if (value === undefined || value === null || value === '') {
-        delete newAnswers[`${questionId}-${currentGroup.partId}`];
+  const handleSelectAnswerGroup = (questionId, value) => {
+    setAnswers((previous) => {
+      const nextAnswers = { ...previous };
+      const answerKey = `${questionId}-${currentGroup.partId}`;
+
+      if (value === undefined || value === null || value === "") {
+        delete nextAnswers[answerKey];
       } else {
-        newAnswers[`${questionId}-${currentGroup.partId}`] = value;
+        nextAnswers[answerKey] = value;
       }
-      return newAnswers;
+
+      return nextAnswers;
     });
-  }, [currentGroup]);
-
-  const handleNext = () => {
-    if (currentIndex < totalPages - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
-  };
-
-  const handleSubmit = () => {
-    setShowResult(true);
-    setIsFinished(true);
   };
 
   const handleRestart = () => {
     setCurrentIndex(0);
     setAnswers({});
-    setShowResult(false);
     setIsFinished(false);
   };
 
-  const answerKeySingle = currentGroup && !currentGroup.isMatchingGroup && !currentGroup.isMultipleChoiceGroup && !currentGroup.isFillInGroup ? `${currentGroup.id}-${currentGroup.partId}` : null;
-  const currentAnswerSingle = answerKeySingle ? answers[answerKeySingle] : undefined;
-  const isLastPage = currentIndex === totalPages - 1;
-  const answeredCount = Object.keys(answers).length;
-
   if (isFinished) {
-    // Để tương thích với ResultScreen, ta cần flattened questions.
     const allQuestionsFlat = [];
-    allGroups.forEach(g => {
-       if (g.isMatchingGroup) {
-          allQuestionsFlat.push(...g.questions.map(q => ({...q, partId: g.partId, partTitle: g.partTitle, partType: g.partType, options: g.matchingData.options})));
-       } else if (g.isMultipleChoiceGroup || g.isFillInGroup) {
-          allQuestionsFlat.push(...g.questions.map(q => ({...q, partId: g.partId, partTitle: g.partTitle, partType: g.partType})));
-       } else {
-          allQuestionsFlat.push(g);
-       }
+
+    allGroups.forEach((group) => {
+      if (GROUP_TYPES.has(group.partType)) {
+        allQuestionsFlat.push(
+          ...group.questions.map((question) => ({
+            ...question,
+            partId: group.partId,
+            partTitle: group.partTitle,
+            partType: group.partType,
+            options:
+              group.partType === "matching"
+                ? group.matchingData.options
+                : question.options,
+          }))
+        );
+      } else {
+        allQuestionsFlat.push(group);
+      }
     });
 
     const mappedAnswers = {};
-    allQuestionsFlat.forEach((q) => {
-      const key = `${q.id}-${q.partId}`;
-      if (answers[key] !== undefined) {
-        mappedAnswers[q.id] = answers[key];
+    allQuestionsFlat.forEach((question) => {
+      const answerKey = `${question.id}-${question.partId}`;
+      if (answers[answerKey] !== undefined) {
+        mappedAnswers[question.id] = answers[answerKey];
       }
     });
 
@@ -134,67 +132,79 @@ const QuizScreen = ({ test, part, onGoBack, onGoHome }) => {
         onRestart={handleRestart}
         onGoHome={onGoHome}
         testTitle={test.title}
-        partTitle={part === 'all' ? 'Tất cả Parts' : part.title}
+        partTitle={part === "all" ? "Tat ca Parts" : part.title}
       />
     );
   }
 
-  return (
-    <div className="animate-fade-in-up">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={onGoBack}
-          className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors group"
-        >
-          <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span className="text-sm font-medium">Quay lại</span>
-        </button>
+  const currentAnswerKey = isSingleQuestion ? `${currentGroup.id}-${currentGroup.partId}` : null;
+  const currentAnswerSingle = currentAnswerKey ? answers[currentAnswerKey] : undefined;
+  const isLastPage = currentIndex === totalPages - 1;
+  const answeredCount = Object.keys(answers).length;
 
-        <div className="text-right">
-          <p className="text-xs text-text-muted">{test.title}</p>
-          <p className="text-sm font-semibold text-primary-light">
-            {currentGroup.partTitle}
-          </p>
-        </div>
-      </div>
-
-      {/* Progress */}
-      <ProgressBar
-         current={currentIndex + 1}
-         total={totalPages}
-         label={`Trang ${currentIndex + 1}/${totalPages} • Đã trả lời: ${answeredCount}`}
-      />
-
-      {/* Audio Player */}
-      <AudioPlayer src={currentAudio} />
-
-      {/* Question / Group */}
-      <div className="glass-card p-5 mb-6" key={currentGroup.isMatchingGroup || currentGroup.isMultipleChoiceGroup || currentGroup.isFillInGroup ? `group-${currentGroup.partId}` : `${currentGroup.id}-${currentGroup.partId}`}>
-        {currentGroup.isMatchingGroup ? (
-          <MatchingGroupCard 
+  const renderCurrentCard = () => {
+    switch (currentGroup.partType) {
+      case "matching":
+        return (
+          <MatchingGroupCard
             group={currentGroup}
             answers={answers}
             onSelectAnswer={handleSelectAnswerGroup}
             showResult={false}
           />
-        ) : currentGroup.isMultipleChoiceGroup ? (
-          <MultipleChoiceGroupCard 
+        );
+      case "multiple-choice-group":
+        return (
+          <MultipleChoiceGroupCard
             group={currentGroup}
             answers={answers}
             onSelectAnswer={handleSelectAnswerGroup}
             showResult={false}
           />
-        ) : currentGroup.isFillInGroup ? (
-          <FillInGroupCard 
+        );
+      case "fill-in-group":
+        return (
+          <FillInGroupCard
             group={currentGroup}
             answers={answers}
             onSelectAnswer={handleSelectAnswerGroup}
             showResult={false}
           />
-        ) : (
+        );
+      case "word-builder":
+        return (
+          <WordBuilderGroupCard
+            group={currentGroup}
+            answers={answers}
+            onSelectAnswer={handleSelectAnswerGroup}
+          />
+        );
+      case "letter-gap-fill":
+        return (
+          <LetterGapFillCard
+            group={currentGroup}
+            answers={answers}
+            onSelectAnswer={handleSelectAnswerGroup}
+          />
+        );
+      case "info-extract":
+        return (
+          <InfoExtractGroupCard
+            group={currentGroup}
+            answers={answers}
+            onSelectAnswer={handleSelectAnswerGroup}
+          />
+        );
+      case "writing-task":
+        return (
+          <WritingPromptCard
+            group={currentGroup}
+            answers={answers}
+            onSelectAnswer={handleSelectAnswerGroup}
+          />
+        );
+      default:
+        return (
           <QuestionCard
             question={currentGroup}
             questionIndex={currentIndex}
@@ -205,37 +215,76 @@ const QuizScreen = ({ test, part, onGoBack, onGoHome }) => {
             partType={currentGroup.partType}
             optionsType={currentGroup.optionsType}
           />
-        )}
+        );
+    }
+  };
+
+  return (
+    <div className="animate-fade-in-up">
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={onGoBack}
+          className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors group"
+        >
+          <svg
+            className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="text-sm font-medium">Quay lai</span>
+        </button>
+
+        <div className="text-right">
+          <p className="text-xs text-text-muted">{test.title}</p>
+          <p className="text-sm font-semibold text-primary-light">{currentGroup.partTitle}</p>
+        </div>
       </div>
 
-      {/* Base Navigation Mini dots */}
+      <ProgressBar
+        current={currentIndex + 1}
+        total={totalPages}
+        label={`Trang ${currentIndex + 1}/${totalPages} - Da tra loi: ${answeredCount}`}
+      />
+
+      {currentAudio && <AudioPlayer key={currentAudio} src={currentAudio} />}
+
+      <div
+        className="glass-card p-5 mb-6"
+        key={isSingleQuestion ? `${currentGroup.id}-${currentGroup.partId}` : `group-${currentGroup.partId}`}
+      >
+        {renderCurrentCard()}
+      </div>
+
       <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
-        {allGroups.map((g, idx) => {
-          const isCurrent = idx === currentIndex;
+        {allGroups.map((group, index) => {
+          const isCurrent = index === currentIndex;
           let isAnswered = false;
           let label = "";
 
-          if (g.isMatchingGroup || g.isMultipleChoiceGroup || g.isFillInGroup) {
-             // Group is answered if ALL questions are answered
-             const keys = g.questions.map(q => `${q.id}-${g.partId}`);
-             isAnswered = keys.every(k => answers[k] !== undefined);
-             label = `Part ${g.partId}`; // Or "11-15"
+          if (GROUP_TYPES.has(group.partType)) {
+            const keys = group.questions.map((question) => `${question.id}-${group.partId}`);
+            isAnswered = keys.every((key) => answers[key] !== undefined);
+            label = `P${group.partId}`;
           } else {
-             const key = `${g.id}-${g.partId}`;
-             isAnswered = answers[key] !== undefined;
-             label = g.id;
+            const key = `${group.id}-${group.partId}`;
+            isAnswered = answers[key] !== undefined;
+            label = group.id;
           }
 
           return (
             <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
+              key={`${group.partId}-${index}`}
+              onClick={() => setCurrentIndex(index)}
               className={`min-w-8 h-8 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center ${
                 isCurrent
-                  ? 'bg-primary text-white scale-110 shadow-lg shadow-primary/30'
+                  ? "bg-primary text-white scale-110 shadow-lg shadow-primary/30"
                   : isAnswered
-                  ? 'bg-primary/20 text-primary-light hover:bg-primary/30'
-                  : 'bg-surface-lighter text-text-muted hover:bg-surface-light'
+                  ? "bg-primary/20 text-primary-light hover:bg-primary/30"
+                  : "bg-surface-lighter text-text-muted hover:bg-surface-light"
               }`}
             >
               {label}
@@ -244,36 +293,35 @@ const QuizScreen = ({ test, part, onGoBack, onGoHome }) => {
         })}
       </div>
 
-      {/* Navigation Buttons */}
       <div className="flex gap-3">
         <button
-          onClick={handlePrev}
+          onClick={() => setCurrentIndex((value) => Math.max(0, value - 1))}
           disabled={currentIndex === 0}
           className={`flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
             currentIndex === 0
-              ? 'bg-surface-lighter text-text-muted cursor-not-allowed'
-              : 'bg-surface-lighter text-text-primary hover:bg-surface-light hover:scale-[1.02] active:scale-[0.98]'
+              ? "bg-surface-lighter text-text-muted cursor-not-allowed"
+              : "bg-surface-lighter text-text-primary hover:bg-surface-light hover:scale-[1.02] active:scale-[0.98]"
           }`}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          Trước
+          Truoc
         </button>
 
         {isLastPage ? (
           <button
-            onClick={handleSubmit}
-            className="flex-1 py-3 rounded-xl bg-linear-to-r from-success to-emerald-600 text-white font-semibold transition-all hover:shadow-lg hover:shadow-success/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+            onClick={() => setIsFinished(true)}
+            className="flex-1 py-3 rounded-xl bg-linear-to-r from-success to-emerald-600 text-white font-semibold transition-all hover:shadow-lg hover:shadow-success/30 hover:scale-[1.02] active:scale-[0.98]"
           >
-            ✅ Nộp bài
+            Nop bai
           </button>
         ) : (
           <button
-            onClick={handleNext}
+            onClick={() => setCurrentIndex((value) => Math.min(totalPages - 1, value + 1))}
             className="flex-1 py-3 rounded-xl bg-linear-to-r from-primary to-primary-dark text-white font-semibold transition-all hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
           >
-            Tiếp
+            Tiep
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
