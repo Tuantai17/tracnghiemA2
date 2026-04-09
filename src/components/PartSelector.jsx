@@ -1,5 +1,4 @@
 const PartSelector = ({ test, onSelectPart, onGoBack }) => {
-  const partIcons = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9"];
   const partColors = [
     "from-indigo-500 to-purple-500",
     "from-cyan-500 to-blue-500",
@@ -8,6 +7,11 @@ const PartSelector = ({ test, onSelectPart, onGoBack }) => {
     "from-rose-500 to-pink-500",
   ];
   const totalQuestions = test.parts.reduce((sum, part) => sum + part.questions.length, 0);
+
+  const normalizedPaper = String(test.paper || "").toLowerCase();
+  const isReadingWriting = normalizedPaper.includes("reading") || String(test.id || "").toUpperCase().startsWith("RW");
+
+  const gridColsClass = isReadingWriting ? "md:grid-cols-2 xl:grid-cols-3" : "md:grid-cols-2";
 
   return (
     <div className="animate-fade-in-up">
@@ -43,21 +47,21 @@ const PartSelector = ({ test, onSelectPart, onGoBack }) => {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className={`grid grid-cols-1 gap-3 ${gridColsClass}`}>
         {test.parts.map((part, index) => {
           const colorClass = partColors[index % partColors.length];
-          const iconLabel = partIcons[index] ?? `P${part.id}`;
+          const iconLabel = `P${index + 1}`;
 
           return (
             <button
               key={part.id}
               onClick={() => onSelectPart(part)}
-              className="w-full glass-card glass-card-hover p-4 text-left transition-all duration-300 group"
+              className="glass-card glass-card-hover p-4 text-left transition-all duration-300 group min-h-[150px]"
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex h-full flex-col gap-3">
                 <div
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClass} flex items-center justify-center shrink-0 shadow-lg`}
+                  className={`w-11 h-11 rounded-xl bg-gradient-to-br ${colorClass} flex items-center justify-center shadow-lg`}
                 >
                   <span className="text-sm font-bold text-white">{iconLabel}</span>
                 </div>
@@ -66,7 +70,7 @@ const PartSelector = ({ test, onSelectPart, onGoBack }) => {
                   <h3 className="text-base font-bold text-text-primary mb-0.5 group-hover:text-primary-light transition-colors">
                     {part.title}
                   </h3>
-                  <p className="text-xs text-text-secondary line-clamp-2">{part.description}</p>
+                  <p className="text-xs text-text-secondary line-clamp-3">{part.description}</p>
                   <div className="flex flex-wrap items-center gap-2 mt-1.5">
                     <span className="text-xs text-text-muted">{part.questions.length} cau hoi</span>
                     {(part.badge || part.type) && (
@@ -77,15 +81,17 @@ const PartSelector = ({ test, onSelectPart, onGoBack }) => {
                   </div>
                 </div>
 
-                <svg
-                  className="w-5 h-5 text-text-muted opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <div className="flex justify-end">
+                  <svg
+                    className="w-5 h-5 text-text-muted opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
             </button>
           );

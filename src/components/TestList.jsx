@@ -1,127 +1,221 @@
-const normalizeBook = (book) => {
-  if (!book) return "Khac";
-  if (book.includes("1")) return "Quyển 1";
-  if (book.includes("2")) return "Quyển 2";
-  return book;
+import { useMemo, useState } from "react";
+
+const normalizeBookKey = (book) => {
+  if (!book) return "book_other";
+  if (book.includes("1")) return "book_1";
+  if (book.includes("2")) return "book_2";
+  return "book_other";
 };
 
-const orderedBooks = ["Quyển 1", "Quyển 2"];
+const getPaperType = (test) => {
+  const paper = String(test.paper || "").toLowerCase();
+  const testId = String(test.id || "").toUpperCase();
 
-const TestList = ({ tests, onSelectTest }) => {
-  const groupedTests = tests.reduce((groups, test) => {
-    const book = normalizeBook(test.book);
-    if (!groups[book]) groups[book] = [];
-    groups[book].push({
-      ...test,
-      book,
-    });
-    return groups;
-  }, {});
+  if (paper.includes("reading")) return "reading";
+  if (paper.includes("listen")) return "listening";
+  if (testId.startsWith("RW")) return "reading";
+  return "listening";
+};
 
-  const bookSections = [
-    ...orderedBooks.filter((book) => groupedTests[book]),
-    ...Object.keys(groupedTests).filter((book) => !orderedBooks.includes(book)),
-  ];
+const getQuestionCount = (test) => test.parts.reduce((sum, part) => sum + part.questions.length, 0);
+
+const BOOKS = [
+  { key: "book_1", label: "Quyen 1", subtitle: "Bo de co ban" },
+  { key: "book_2", label: "Quyen 2", subtitle: "Bo de mo rong" },
+];
+
+const PAPER_BLOCKS = [
+  { key: "reading", title: "Reading & Writing", subtitle: "Paper 1" },
+  { key: "listening", title: "Listening", subtitle: "Paper 2" },
+];
+
+const updateRibbonTilt = (event) => {
+  const el = event.currentTarget;
+  const rect = el.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  const ratioX = x / rect.width;
+  const ratioY = y / rect.height;
+
+  const rotateY = (ratioX - 0.5) * 12;
+  const rotateX = (0.5 - ratioY) * 10;
+
+  el.style.setProperty("--mx", `${(ratioX * 100).toFixed(2)}%`);
+  el.style.setProperty("--my", `${(ratioY * 100).toFixed(2)}%`);
+  el.style.setProperty("--rx", `${rotateY.toFixed(2)}deg`);
+  el.style.setProperty("--ry", `${rotateX.toFixed(2)}deg`);
+};
+
+const resetRibbonTilt = (event) => {
+  const el = event.currentTarget;
+  el.style.setProperty("--mx", "50%");
+  el.style.setProperty("--my", "50%");
+  el.style.setProperty("--rx", "0deg");
+  el.style.setProperty("--ry", "0deg");
+};
+
+const TestList = ({ tests, onSelectTest, interactionMode = "ribbon" }) => {
+  const [selectedBookKey, setSelectedBookKey] = useState(null);
+
+  const groupedTests = useMemo(() => {
+    return tests.reduce((groups, test) => {
+      const key = normalizeBookKey(test.book);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(test);
+      return groups;
+    }, {});
+  }, [tests]);
+
+  if (!selectedBookKey) {
+    return (
+      <main className="animate-fade-in-up space-y-8">
+        <section className="double-bezel-shell">
+          <div className="double-bezel-core px-5 py-7 text-center sm:px-8 sm:py-9">
+            <p className="eyebrow-tag mx-auto">Cambridge key a2 workbook</p>
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-100 text-balance sm:text-5xl">
+              Chon quyen de bat dau
+            </h1>
+            <p className="mx-auto mt-3 max-w-[56ch] text-sm font-medium text-zinc-400 sm:text-base">
+              Moi quyen duoc chia san thanh 2 nhom rieng: Reading & Writing va Listening.
+            </p>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+          {BOOKS.map((book) => {
+            const testsInBook = groupedTests[book.key] || [];
+            const readingCount = testsInBook.filter((test) => getPaperType(test) === "reading").length;
+            const listeningCount = testsInBook.filter((test) => getPaperType(test) === "listening").length;
+
+            return (
+              <button
+                key={book.key}
+                type="button"
+                onClick={() => setSelectedBookKey(book.key)}
+                onMouseMove={interactionMode === "ribbon" ? updateRibbonTilt : undefined}
+                onMouseLeave={interactionMode === "ribbon" ? resetRibbonTilt : undefined}
+                className="ribbon-card book-card-shell text-left"
+              >
+                <div className="book-card-core">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300/90">{book.subtitle}</p>
+                  <h2 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-100">{book.label}</h2>
+
+                  <div className="mt-6 flex flex-wrap items-center gap-2">
+                    <span className="book-pill">{readingCount} reading tests</span>
+                    <span className="book-pill">{listeningCount} listening tests</span>
+                  </div>
+
+                  <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-zinc-200">
+                    Mo danh sach theo paper
+                    <span className="book-arrow-wrap" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 stroke-current" strokeWidth="1.8">
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </section>
+      </main>
+    );
+  }
+
+  const selectedBook = BOOKS.find((book) => book.key === selectedBookKey);
+  const testsInBook = groupedTests[selectedBookKey] || [];
+
+  const testsByPaper = {
+    reading: testsInBook.filter((test) => getPaperType(test) === "reading"),
+    listening: testsInBook.filter((test) => getPaperType(test) === "listening"),
+  };
 
   return (
-    <div className="animate-fade-in-up">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent mb-4 shadow-lg shadow-primary/30">
-          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M4 19.5V4.5C4 3.67 4.67 3 5.5 3h10A1.5 1.5 0 0 1 17 4.5V21l-3-1.8L11 21l-3-1.8L5 21v-1.5Z" />
-          </svg>
+    <main className="animate-fade-in-up space-y-5">
+      <button
+        type="button"
+        onClick={() => setSelectedBookKey(null)}
+        className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-zinc-100 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-white/40 hover:bg-white/10 active:scale-[0.98]"
+      >
+        <span aria-hidden="true">&larr;</span>
+        Quay lai chon quyen
+      </button>
+
+      <section className="double-bezel-shell">
+        <div className="double-bezel-core p-5 sm:p-7">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+            <div>
+              <p className="eyebrow-tag">Danh sach test</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-zinc-100 sm:text-4xl">
+                {selectedBook?.label}
+              </h2>
+            </div>
+            <p className="text-sm font-medium text-zinc-400">{testsInBook.length} bai test kha dung</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {PAPER_BLOCKS.map((paperBlock) => {
+              const paperTests = testsByPaper[paperBlock.key];
+
+              return (
+                <article key={paperBlock.key} className="rounded-3xl border border-white/10 bg-white/[0.02] p-4 sm:p-5">
+                  <header className="mb-4 border-b border-white/10 pb-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300/85">
+                      {paperBlock.subtitle}
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold text-zinc-100">{paperBlock.title}</h3>
+                    <p className="mt-1 text-sm text-zinc-400">{paperTests.length} bai test</p>
+                  </header>
+
+                  {paperTests.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-white/20 bg-white/[0.03] p-4 text-sm text-zinc-400">
+                      Chua co du lieu cho muc nay trong {selectedBook?.label}.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {paperTests.map((test) => (
+                        <button
+                          key={test.id}
+                          type="button"
+                          onClick={() => onSelectTest(test)}
+                          onMouseMove={interactionMode === "ribbon" ? updateRibbonTilt : undefined}
+                          onMouseLeave={interactionMode === "ribbon" ? resetRibbonTilt : undefined}
+                          className="ribbon-card test-row-shell w-full text-left"
+                        >
+                          <div className="test-row-core">
+                            <div className="flex flex-wrap items-start justify-between gap-4">
+                              <div>
+                                <p className="text-sm font-semibold tracking-wide text-teal-300/90">{test.id}</p>
+                                <h4 className="mt-1 text-lg font-semibold text-zinc-100">{test.title}</h4>
+                                <p className="mt-1 text-sm text-zinc-400">{test.description}</p>
+                              </div>
+
+                              <span className="book-arrow-wrap mt-1 shrink-0" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 stroke-current" strokeWidth="1.8">
+                                  <path d="M5 12h14" />
+                                  <path d="m13 6 6 6-6 6" />
+                                </svg>
+                              </span>
+                            </div>
+
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              <span className="book-pill">{test.parts.length} parts</span>
+                              <span className="book-pill">{getQuestionCount(test)} cau</span>
+                              {test.paper && <span className="book-pill">{test.paper}</span>}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
         </div>
-
-        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">
-          Cambridge A2{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-            Practice
-          </span>
-        </h1>
-
-        <p className="text-text-secondary text-sm sm:text-base max-w-md mx-auto">
-          Cambridge English Key (KET) A2 - Listening and Reading & Writing
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        {bookSections.map((book) => (
-          <section key={book} className="space-y-4">
-            <div className="flex items-center justify-between gap-3 px-1">
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-text-primary">{book}</h2>
-                <p className="text-xs sm:text-sm text-text-secondary">
-                  {groupedTests[book].length} bai test
-                </p>
-              </div>
-              <div className="h-px flex-1 bg-gradient-to-r from-primary/40 via-accent/20 to-transparent" />
-            </div>
-
-            <div className="space-y-4">
-              {groupedTests[book].map((test, index) => (
-                <button
-                  key={test.id}
-                  onClick={() => onSelectTest(test)}
-                  className="w-full glass-card glass-card-hover p-5 text-left transition-all duration-300 group"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center shrink-0 group-hover:from-primary/30 group-hover:to-accent/30 transition-all">
-                      <span className="text-sm sm:text-base font-bold text-center leading-tight text-transparent bg-clip-text bg-gradient-to-br from-primary-light to-accent break-words">
-                        {test.id}
-                      </span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-text-primary mb-0.5 group-hover:text-primary-light transition-colors">
-                        {test.title}
-                      </h3>
-                      <p className="text-sm text-text-secondary truncate">{test.description}</p>
-
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
-                        <span className="text-xs px-2 py-1 rounded-full bg-primary/15 text-primary-light font-medium">
-                          {test.book}
-                        </span>
-
-                        {test.paper && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-sky-500/15 text-sky-300 font-medium">
-                            {test.paper}
-                          </span>
-                        )}
-
-                        <span className="text-xs px-2 py-1 rounded-full bg-accent/15 text-accent font-medium">
-                          {test.parts.length} Parts
-                        </span>
-
-                        <span className="text-xs px-2 py-1 rounded-full bg-success/15 text-success font-medium">
-                          {test.parts.reduce((sum, part) => sum + part.questions.length, 0)} Cau
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="shrink-0 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                      <svg
-                        className="w-5 h-5 text-text-secondary"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-
-      <div className="mt-8 text-center">
-        <p className="text-xs text-text-muted">Du lieu tu sach Cambridge English Key A2</p>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 

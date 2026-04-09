@@ -48,7 +48,7 @@ const readingWritingQuyen2Data = [
         type: "multiple-choice-group",
         badge: "Sentence Cloze",
         description:
-          "Read the sentences about Richard travelling by plane. Choose the best word (A, B or C) for each space. For questions 6-10, mark A, B or C on your answer sheet.",
+          "Read the sentences about travelling by plane. Choose the best word (A, B or C) for each space. For questions 6-10, mark A, B or C on your answer sheet.",
         example: {
           question: "Richard often travels to Canada to ______ his family.",
           answer: "B",
@@ -57,31 +57,32 @@ const readingWritingQuyen2Data = [
         questions: [
           {
             id: 6,
-            question: "Richard says the airport gets very ______ at weekends.",
+            question:
+              "The airport gets very ______ at weekends, so Richard travels during the week when it's quieter.",
             options: ["busy", "strong", "heavy"],
             correct: 0,
           },
           {
             id: 7,
-            question: "Richard ______ has a coffee before his plane leaves.",
+            question: "Richard ______ has a coffee when he arrives at the airport.",
             options: ["already", "once", "usually"],
             correct: 2,
           },
           {
             id: 8,
-            question: "Richard ______ looking around the shops in the airport.",
+            question: "Richard ______ looking around the shops before he gets on the plane.",
             options: ["hopes", "enjoys", "wants"],
             correct: 1,
           },
           {
             id: 9,
-            question: "Richard hates it when there's a ______ and his plane is late.",
+            question: "Richard hates it when there's a ______, as he likes to arrive on time.",
             options: ["difference", "moment", "delay"],
             correct: 2,
           },
           {
             id: 10,
-            question: "On the plane, Richard watches films or ______ to the person next to him.",
+            question: "Richard often watches films during the flight, or ______ to the person next to him.",
             options: ["says", "tells", "talks"],
             correct: 2,
           },
@@ -130,6 +131,39 @@ const readingWritingQuyen2Data = [
             options: ["This is Amanda speaking.", "She doesn't want to.", "I think it may be."],
             correct: 2,
           },
+        ],
+      },
+      {
+        id: "3A",
+        title: "Part 3 (Questions 16-20)",
+        type: "matching",
+        badge: "Conversation Matching",
+        description:
+          "Complete the conversation. What does Ben say to his mother? For questions 16-20, mark the correct letter A-H on your answer sheet.",
+        matchingData: {
+          leftHeading: "Conversation gaps",
+          rightHeading: "Options",
+          options: [
+            "Maybe. I'm going to ask if he wants to go swimming with me tomorrow.",
+            "Yes, it's too easy for me.",
+            "Alright. Will you be able to drive us?",
+            "Yes, it was fine. We've got some great new teachers.",
+            "Just a little. Can I watch TV first?",
+            "Where shall I meet him?",
+            "Just one. We sat next to each other.",
+            "I'll see what he thinks tomorrow then.",
+          ],
+        },
+        questions: [
+          { id: 16, question: "Mother: Oh, that's good. Are there any new students?", correct: 6 },
+          { id: 17, question: "Mother: Really? Do you think you'll be friends?", correct: 0 },
+          {
+            id: 18,
+            question: "Mother: Why don't you invite him to go at the weekend instead?",
+            correct: 2,
+          },
+          { id: 19, question: "Mother: I'm sure I can find time for that.", correct: 7 },
+          { id: 20, question: "Mother: Good idea. Now, have you got any homework?", correct: 4 },
         ],
       },
       {
@@ -426,7 +460,7 @@ const readingWritingQuyen2Data = [
         type: "multiple-choice-group",
         badge: "Sentence Cloze",
         description:
-          "Read the sentences about Sharon, who plays tennis. Choose the best word (A, B or C) for each space. For questions 6-10, mark A, B or C on your answer sheet.",
+          "Read the sentences about a girl who plays tennis. Choose the best word (A, B or C) for each space. For questions 6-10, mark A, B or C on your answer sheet.",
         example: {
           question: "Sharon has played tennis since she was a little girl and is now ______ good.",
           answer: "C",
@@ -441,13 +475,13 @@ const readingWritingQuyen2Data = [
           },
           {
             id: 7,
-            question: "Sharon ______ lots of competitions with other young players.",
+            question: "Sharon ______ lots of competitions and often plays very well in them.",
             options: ["enters", "takes", "earns"],
             correct: 0,
           },
           {
             id: 8,
-            question: "Recently, she has ______ her parents for a new racket.",
+            question: "It's Sharon's birthday soon and she has ______ her parents for a new racket.",
             options: ["told", "asked", "spoken"],
             correct: 1,
           },
@@ -459,7 +493,8 @@ const readingWritingQuyen2Data = [
           },
           {
             id: 10,
-            question: "At the moment, Sharon is helping her friend to ______ her game.",
+            question:
+              "Sharon's friend has just started playing tennis and Sharon is helping her to ______.",
             options: ["copy", "improve", "know"],
             correct: 1,
           },
@@ -507,6 +542,43 @@ const readingWritingQuyen2Data = [
             question: "The library's closed already.",
             options: ["It's a pity you can't.", "I can wait until tomorrow.", "Can I borrow it?"],
             correct: 1,
+          },
+        ],
+      },
+      {
+        id: "3A",
+        title: "Part 3 (Questions 16-20)",
+        type: "matching",
+        badge: "Conversation Matching",
+        description:
+          "Complete the conversation. What does Sarah say to Alice? For questions 16-20, mark the correct letter A-H on your answer sheet.",
+        matchingData: {
+          leftHeading: "Conversation gaps",
+          rightHeading: "Options",
+          options: [
+            "No problem - I have to work the next day anyway.",
+            "That's fine. You know the way to my house, don't you?",
+            "How many people are going to be there?",
+            "Oh, OK then. How are you getting there?",
+            "Great, I'll go with you, then. What about a present?",
+            "It's quite an expensive one.",
+            "Thanks, I'll give you some money for that, and I'll get a card.",
+            "I haven't decided yet.",
+          ],
+        },
+        questions: [
+          { id: 16, question: "Alice: Oh, come on! It'll be fun.", correct: 3 },
+          { id: 17, question: "Alice: I'm driving, and there's still space in my car.", correct: 4 },
+          { id: 18, question: "Alice: I've bought one - we can say it's from both of us.", correct: 6 },
+          {
+            id: 19,
+            question: "Alice: Great - I'll write my name on it. Shall I pick you up at 7 o'clock?",
+            correct: 1,
+          },
+          {
+            id: 20,
+            question: "Alice: Of course! By the way, I can't stay too late at the party.",
+            correct: 0,
           },
         ],
       },
@@ -881,6 +953,47 @@ const readingWritingQuyen2Data = [
             question: "How is your mother?",
             options: ["She's 54.", "Much better, thanks.", "She's tall and beautiful."],
             correct: 1,
+          },
+        ],
+      },
+      {
+        id: "3A",
+        title: "Part 3 (Questions 16-20)",
+        type: "matching",
+        badge: "Conversation Matching",
+        description:
+          "Complete the conversation between two friends. What does Anita say to Ivan? For questions 16-20, mark the correct letter A-H on your answer sheet.",
+        matchingData: {
+          leftHeading: "Conversation gaps",
+          rightHeading: "Options",
+          options: [
+            "She'll love them.",
+            "Did you want to go anywhere special?",
+            "How did they get there?",
+            "Well, at least you've got them now.",
+            "Great, thanks. What about yours?",
+            "Did you have trouble with your car again?",
+            "She'll help you find them.",
+            "So did you get her anything in the end?",
+          ],
+        },
+        questions: [
+          { id: 16, question: "Ivan: OK, but I had a bit of a problem on Saturday.", correct: 5 },
+          { id: 17, question: "Ivan: In a way. I couldn't find my keys.", correct: 1 },
+          {
+            id: 18,
+            question: "Ivan: Only to the shops. I needed a birthday present for my mum.",
+            correct: 7,
+          },
+          {
+            id: 19,
+            question: "Ivan: I bought some chocolates from the local shop. Do you think that'll be OK?",
+            correct: 0,
+          },
+          {
+            id: 20,
+            question: "Ivan: I hope so! I found my car keys this morning. They were in the bathroom.",
+            correct: 3,
           },
         ],
       },
@@ -1298,6 +1411,47 @@ const readingWritingQuyen2Data = [
             options: ["When did they arrive?", "Is there another one?", "Where are our seats?"],
             correct: 1,
           },
+        ],
+      },
+      {
+        id: "3A",
+        title: "Part 3 (Questions 16-20)",
+        type: "matching",
+        badge: "Conversation Matching",
+        description:
+          "Complete the conversation between two friends. What does Paula say to Jenny? For questions 16-20, mark the correct letter A-H on your answer sheet.",
+        matchingData: {
+          leftHeading: "Conversation gaps",
+          rightHeading: "Options",
+          options: [
+            "I have to study first. How about a bit later?",
+            "Good idea! Everyone likes those.",
+            "I'd love to. Is it in the evening?",
+            "If you like. Do you want to go in my car?",
+            "Yes, I'll be there at ten.",
+            "What do we need to get?",
+            "I'm afraid I'm at work that day.",
+            "Would you like me to help?",
+          ],
+        },
+        questions: [
+          {
+            id: 16,
+            question: "Jenny: That's right - at eight o'clock. But I've got a lot to do before that.",
+            correct: 7,
+          },
+          {
+            id: 17,
+            question: "Jenny: Well, you could come with me tomorrow to buy some food.",
+            correct: 3,
+          },
+          { id: 18, question: "Jenny: That's a good idea. Shall we leave at about nine?", correct: 0 },
+          {
+            id: 19,
+            question: "Jenny: Ten then. I'll come to your house and we'll leave when you're ready.",
+            correct: 4,
+          },
+          { id: 20, question: "Jenny: Let's just buy pizza and cakes. Something quick and easy.", correct: 1 },
         ],
       },
       {
