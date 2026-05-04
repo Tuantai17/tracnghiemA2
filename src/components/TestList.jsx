@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const normalizeBookKey = (book) => {
   if (!book) return "book_other";
@@ -29,6 +29,17 @@ const PAPER_BLOCKS = [
   { key: "listening", title: "Listening", subtitle: "Paper 2" },
 ];
 
+const EyeIcon = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15.75A3.75 3.75 0 1 0 12 8.25a3.75 3.75 0 0 0 0 7.5Z" />
+  </svg>
+);
+
 const updateRibbonTilt = (event) => {
   const el = event.currentTarget;
   const rect = el.getBoundingClientRect();
@@ -54,9 +65,14 @@ const resetRibbonTilt = (event) => {
   el.style.setProperty("--ry", "0deg");
 };
 
-const TestList = ({ tests, onSelectTest, interactionMode = "ribbon" }) => {
-  const [selectedBookKey, setSelectedBookKey] = useState(null);
-
+const TestList = ({
+  tests,
+  onSelectTest,
+  onPreviewTest,
+  interactionMode = "ribbon",
+  selectedBookKey,
+  onChangeBookKey,
+}) => {
   const groupedTests = useMemo(() => {
     return tests.reduce((groups, test) => {
       const key = normalizeBookKey(test.book);
@@ -91,7 +107,7 @@ const TestList = ({ tests, onSelectTest, interactionMode = "ribbon" }) => {
               <button
                 key={book.key}
                 type="button"
-                onClick={() => setSelectedBookKey(book.key)}
+                onClick={() => onChangeBookKey(book.key)}
                 onMouseMove={interactionMode === "ribbon" ? updateRibbonTilt : undefined}
                 onMouseLeave={interactionMode === "ribbon" ? resetRibbonTilt : undefined}
                 className="ribbon-card book-card-shell text-left"
@@ -135,7 +151,7 @@ const TestList = ({ tests, onSelectTest, interactionMode = "ribbon" }) => {
     <main className="animate-fade-in-up space-y-5">
       <button
         type="button"
-        onClick={() => setSelectedBookKey(null)}
+        onClick={() => onChangeBookKey(null)}
         className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-zinc-100 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-white/40 hover:bg-white/10 active:scale-[0.98]"
       >
         <span aria-hidden="true">&larr;</span>
@@ -175,13 +191,11 @@ const TestList = ({ tests, onSelectTest, interactionMode = "ribbon" }) => {
                   ) : (
                     <div className="space-y-3">
                       {paperTests.map((test) => (
-                        <button
+                        <div
                           key={test.id}
-                          type="button"
-                          onClick={() => onSelectTest(test)}
                           onMouseMove={interactionMode === "ribbon" ? updateRibbonTilt : undefined}
                           onMouseLeave={interactionMode === "ribbon" ? resetRibbonTilt : undefined}
-                          className="ribbon-card test-row-shell w-full text-left"
+                          className="ribbon-card test-row-shell"
                         >
                           <div className="test-row-core">
                             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -204,8 +218,29 @@ const TestList = ({ tests, onSelectTest, interactionMode = "ribbon" }) => {
                               <span className="book-pill">{getQuestionCount(test)} cau</span>
                               {test.paper && <span className="book-pill">{test.paper}</span>}
                             </div>
+
+                            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                              <button
+                                type="button"
+                                onClick={() => onPreviewTest(test)}
+                                className="preview-answer-button"
+                              >
+                                <EyeIcon />
+                                <span>Xem dap an</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onSelectTest(test)}
+                                className="start-part-button"
+                              >
+                                <span>Mo part</span>
+                                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   )}

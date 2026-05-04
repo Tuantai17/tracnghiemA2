@@ -1,6 +1,6 @@
 import React from "react";
 
-const InfoExtractGroupCard = ({ group, answers, onSelectAnswer }) => {
+const InfoExtractGroupCard = ({ group, answers, onSelectAnswer, showResult = false }) => {
   const { description, infoData, questions, partId } = group;
 
   return (
@@ -88,8 +88,10 @@ const InfoExtractGroupCard = ({ group, answers, onSelectAnswer }) => {
                       type="text"
                       value={currentValue}
                       onChange={(event) => onSelectAnswer(question.id, event.target.value)}
-                      className="h-12 flex-1 border-none bg-transparent px-3 text-base text-zinc-800 outline-none"
+                      className="h-12 flex-1 border-none bg-transparent px-3 text-base text-zinc-800 outline-none disabled:cursor-not-allowed disabled:text-zinc-500"
                       autoComplete="off"
+                      disabled={showResult}
+                      readOnly={showResult}
                     />
 
                     {question.suffix && (

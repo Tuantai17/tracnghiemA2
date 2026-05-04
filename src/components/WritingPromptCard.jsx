@@ -1,6 +1,6 @@
 import React from "react";
 
-const WritingPromptCard = ({ group, answers, onSelectAnswer }) => {
+const WritingPromptCard = ({ group, answers, onSelectAnswer, showResult = false }) => {
   const { description, writingData, partId, questions } = group;
   const question = questions[0];
   const answerKey = `${question.id}-${partId}`;
@@ -38,7 +38,7 @@ const WritingPromptCard = ({ group, answers, onSelectAnswer }) => {
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                Your Note
+                {showResult ? "Sample Note" : "Your Note"}
               </p>
               <p className="text-sm text-zinc-500">Recommended length: 25-35 words</p>
             </div>
@@ -50,8 +50,10 @@ const WritingPromptCard = ({ group, answers, onSelectAnswer }) => {
           <textarea
             value={currentValue}
             onChange={(event) => onSelectAnswer(question.id, event.target.value)}
-            className="min-h-[220px] w-full resize-y rounded-2xl border border-zinc-300 bg-zinc-50 p-4 text-base leading-7 text-zinc-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+            className="min-h-[220px] w-full resize-y rounded-2xl border border-zinc-300 bg-zinc-50 p-4 text-base leading-7 text-zinc-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:text-zinc-500"
             placeholder="Hi Sam, ..."
+            disabled={showResult}
+            readOnly={showResult}
           />
         </div>
       </div>

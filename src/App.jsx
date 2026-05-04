@@ -17,18 +17,20 @@ import './index.css';
  */
 const App = () => {
   const allTests = [...readingWritingTestsData, ...readingWritingQuyen2Data, ...testsData];
-  const [screen, setScreen] = useState('home'); // 'home' | 'parts' | 'quiz'
+  const [screen, setScreen] = useState('home'); // 'home' | 'parts' | 'quiz' | 'preview'
   const [selectedTest, setSelectedTest] = useState(null);
   const [selectedPart, setSelectedPart] = useState(null);
+  const [selectedBookKey, setSelectedBookKey] = useState(null);
+  const [previewBackScreen, setPreviewBackScreen] = useState('parts');
   const [interactionMode, setInteractionMode] = useState(() => {
-    if (typeof window === "undefined") return "ribbon";
-    const savedMode = window.localStorage.getItem("interaction-mode");
-    return savedMode === "tubes" ? "tubes" : "ribbon";
+    if (typeof window === 'undefined') return 'ribbon';
+    const savedMode = window.localStorage.getItem('interaction-mode');
+    return savedMode === 'tubes' ? 'tubes' : 'ribbon';
   });
 
   useEffect(() => {
-    document.body.setAttribute("data-interaction-mode", interactionMode);
-    window.localStorage.setItem("interaction-mode", interactionMode);
+    document.body.setAttribute('data-interaction-mode', interactionMode);
+    window.localStorage.setItem('interaction-mode', interactionMode);
   }, [interactionMode]);
 
   const handleSelectTest = (test) => {
@@ -36,9 +38,22 @@ const App = () => {
     setScreen('parts');
   };
 
+  const handlePreviewTest = (test) => {
+    setSelectedTest(test);
+    setSelectedPart('all');
+    setPreviewBackScreen('home');
+    setScreen('preview');
+  };
+
   const handleSelectPart = (part) => {
     setSelectedPart(part);
     setScreen('quiz');
+  };
+
+  const handlePreviewPart = (part) => {
+    setSelectedPart(part);
+    setPreviewBackScreen('parts');
+    setScreen('preview');
   };
 
   const handleGoHome = () => {
@@ -52,8 +67,23 @@ const App = () => {
     setSelectedPart(null);
   };
 
+  const handleGoBackFromPreview = () => {
+    if (previewBackScreen === 'home') {
+      setScreen('home');
+      setSelectedPart(null);
+      return;
+    }
+
+    setScreen('parts');
+    setSelectedPart(null);
+  };
+
   const contentMaxWidth =
-    screen === "quiz" ? "max-w-6xl" : screen === "home" ? "max-w-6xl" : "max-w-5xl";
+    screen === 'quiz' || screen === 'preview'
+      ? 'max-w-6xl'
+      : screen === 'home'
+      ? 'max-w-6xl'
+      : 'max-w-5xl';
 
   return (
     <div className="min-h-screen">
@@ -63,7 +93,7 @@ const App = () => {
         <div className="absolute bottom-[-15%] left-[-7%] h-[380px] w-[380px] rounded-full bg-accent/10 blur-3xl" />
       </div>
 
-      <TubesCursor enabled={interactionMode === "tubes"} />
+      <TubesCursor enabled={interactionMode === 'tubes'} />
       <SettingsPanel mode={interactionMode} onChangeMode={setInteractionMode} />
 
       {/* Main content */}
@@ -72,7 +102,10 @@ const App = () => {
           <TestList
             tests={allTests}
             onSelectTest={handleSelectTest}
+            onPreviewTest={handlePreviewTest}
             interactionMode={interactionMode}
+            selectedBookKey={selectedBookKey}
+            onChangeBookKey={setSelectedBookKey}
           />
         )}
 
@@ -80,16 +113,18 @@ const App = () => {
           <PartSelector
             test={selectedTest}
             onSelectPart={handleSelectPart}
+            onPreviewPart={handlePreviewPart}
             onGoBack={handleGoHome}
           />
         )}
 
-        {screen === 'quiz' && selectedTest && selectedPart && (
+        {(screen === 'quiz' || screen === 'preview') && selectedTest && selectedPart && (
           <QuizScreen
             test={selectedTest}
             part={selectedPart}
-            onGoBack={handleGoBackToParts}
+            onGoBack={screen === 'preview' ? handleGoBackFromPreview : handleGoBackToParts}
             onGoHome={handleGoHome}
+            previewMode={screen === 'preview'}
           />
         )}
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-const WordBuilderGroupCard = ({ group, answers, onSelectAnswer }) => {
+const WordBuilderGroupCard = ({ group, answers, onSelectAnswer, showResult = false }) => {
   const { description, example, questions, partId } = group;
 
   return (
@@ -52,9 +52,11 @@ const WordBuilderGroupCard = ({ group, answers, onSelectAnswer }) => {
                     type="text"
                     value={currentValue}
                     onChange={(event) => onSelectAnswer(question.id, event.target.value)}
-                    className="w-full border-none bg-transparent text-lg text-zinc-800 outline-none"
+                    className="w-full border-none bg-transparent text-lg text-zinc-800 outline-none disabled:cursor-not-allowed disabled:text-zinc-500"
                     placeholder={"_".repeat(Math.max((question.correct?.length ?? 4) - 1, 1))}
                     autoComplete="off"
+                    disabled={showResult}
+                    readOnly={showResult}
                   />
                 </label>
               </div>

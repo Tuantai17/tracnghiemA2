@@ -1,6 +1,6 @@
 import React from "react";
 
-const LetterGapFillCard = ({ group, answers, onSelectAnswer }) => {
+const LetterGapFillCard = ({ group, answers, onSelectAnswer, showResult = false }) => {
   const { description, letterData, partId } = group;
 
   const renderToken = (token, tokenIndex) => {
@@ -39,8 +39,10 @@ const LetterGapFillCard = ({ group, answers, onSelectAnswer }) => {
           type="text"
           value={currentValue}
           onChange={(event) => onSelectAnswer(token.id, event.target.value)}
-          className="w-24 border-none bg-transparent text-center text-base font-medium text-zinc-800 outline-none sm:w-28"
+          className="w-24 border-none bg-transparent text-center text-base font-medium text-zinc-800 outline-none disabled:cursor-not-allowed disabled:text-zinc-500 sm:w-28"
           autoComplete="off"
+          disabled={showResult}
+          readOnly={showResult}
         />
       </label>
     );
