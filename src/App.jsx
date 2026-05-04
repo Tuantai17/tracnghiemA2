@@ -82,8 +82,8 @@ const App = () => {
     screen === 'quiz' || screen === 'preview'
       ? 'max-w-6xl'
       : screen === 'home'
-      ? 'max-w-6xl'
-      : 'max-w-5xl';
+        ? 'max-w-6xl'
+        : 'max-w-5xl';
 
   return (
     <div className="min-h-screen">
@@ -127,6 +127,10 @@ const App = () => {
             previewMode={screen === 'preview'}
           />
         )}
+
+        <footer className="mt-12 pb-2 text-center">
+          <p className="text-sm font-semibold tracking-[0.42em] text-zinc-500/90">1705</p>
+        </footer>
       </div>
     </div>
   );
