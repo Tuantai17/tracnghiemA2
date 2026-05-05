@@ -125,13 +125,13 @@ const testsData = [
             id: 11,
             question: "Dawn booked the concert ticket",
             options: ["on the internet.", "over the phone.", "by post."],
-            correct: 2
+            correct: 1
           },
           {
             id: 12,
             question: "Dawn's plane ticket cost",
             options: ["£230.", "£300.", "£350."],
-            correct: 2
+            correct: 0
           },
           {
             id: 13,
@@ -143,13 +143,13 @@ const testsData = [
             id: 14,
             question: "Dawn thought the concert was",
             options: ["not very good.", "too short.", "too noisy."],
-            correct: 2
+            correct: 1
           },
           {
             id: 15,
             question: "Most of the time, Dawn was",
             options: ["on the beach.", "on a tour bus.", "in the shops."],
-            correct: 1
+            correct: 2
           }
         ]
       },
@@ -196,11 +196,11 @@ const testsData = [
           ]
         },
         questions: [
-          { id: 21, question: "Name:", correct: ["White", "white"], displayCorrect: "White" },
-          { id: 22, question: "Where:", correct: ["ACHILL", "Achill"], displayCorrect: "ACHILL" },
+          { id: 21, question: "Name:", correct: ["White", "white"], displayCorrect: "The White Hotel" },
+          { id: 22, question: "Where:", correct: ["ACHILL", "Achill"], displayCorrect: "Achill Island" },
           { id: 23, question: "Hotel first built in the year:", correct: "1859" },
           { id: 24, question: "Number of bedrooms:", correct: "36" },
-          { id: 25, question: "Restaurant famous for:", correct: ["Fish", "seafood", "fish", "Seafood"], displayCorrect: "Fish / seafood" }
+          { id: 25, question: "Restaurant famous for:", correct: ["Fish", "seafood", "fish", "Seafood"], displayCorrect: "fish / seafood" }
         ]
       }
     ]
@@ -337,19 +337,19 @@ const testsData = [
             id: 12,
             question: "Joe's class begins at",
             options: ["6.30.", "7.15.", "8.30."],
-            correct: 2
+            correct: 0
           },
           {
             id: 13,
             question: "How many other students will there be in Joe's class?",
             options: ["9", "14", "15"],
-            correct: 2
+            correct: 1
           },
           {
             id: 14,
             question: "What should Joe take to his first class?",
             options: ["a dictionary", "a coursebook", "a notebook"],
-            correct: 1
+            correct: 0
           },
           {
              id: 15,
@@ -534,31 +534,31 @@ const testsData = [
             id: 11,
             question: "The girl will pay",
             options: ["£5.", "£7.", "£9."],
-            correct: 2
+            correct: 1
           },
           {
             id: 12,
             question: "The girl will get on the coach",
             options: ["outside the library.", "in front of the Grand Hotel.", "in Bridge Street."],
-            correct: 2
+            correct: 0
           },
           {
             id: 13,
             question: "The coach will be at the girl's stop at",
             options: ["8.45 am.", "8.55 am.", "9.05 am."],
-            correct: 2
+            correct: 1
           },
           {
             id: 14,
             question: "In Edinburgh, the girl will visit",
             options: ["the castle and shops.", "the cathedral and museums.", "the castle and cathedral."],
-            correct: 1
+            correct: 2
           },
           {
             id: 15,
             question: "The whole trip takes",
             options: ["2 hours.", "2¼ hours.", "4¼ hours."],
-            correct: 1
+            correct: 2
           }
         ]
       },
@@ -584,8 +584,8 @@ const testsData = [
           { id: 16, question: "Name of shop:", correct: "FORSTERS" },
           { id: 17, question: "Size:", correct: "38" },
           { id: 18, question: "Colour:", correct: ["Green", "green"], displayCorrect: "Green" },
-          { id: 19, question: "Sale price:", correct: ["65", "65.00"], displayCorrect: "65.00" },
-          { id: 20, question: "Tomorrow shop closes at:", correct: ["2", "2.00"], displayCorrect: "2.00" }
+          { id: 19, question: "Sale price:", correct: ["65", "65.00"], displayCorrect: "65" },
+          { id: 20, question: "Tomorrow shop closes at:", correct: ["2", "2.00"], displayCorrect: "2" }
         ]
       },
       {
@@ -609,7 +609,7 @@ const testsData = [
           { id: 21, question: "Date:", correct: "October" },
           { id: 22, question: "Start time:", correct: "10.15" },
           { id: 23, question: "Name of special guest:", correct: "HAYWARD" },
-          { id: 24, question: "Price of family ticket:", correct: "8.70" },
+          { id: 24, question: "Price of family ticket:", correct: "8.70", displayCorrect: "8.7" },
           { id: 25, question: "To book a place, call:", correct: "4497 6390" }
         ]
       }
@@ -737,13 +737,13 @@ const testsData = [
             id: 11,
             question: "Duncan stayed in a hotel",
             options: ["in a town.", "near the sea.", "in the mountains."],
-            correct: 1
+            correct: 2
           },
           {
             id: 12,
             question: "Duncan's teacher comes from",
             options: ["England.", "France.", "Canada."],
-            correct: 1
+            correct: 2
           },
           {
             id: 13,
@@ -755,13 +755,13 @@ const testsData = [
             id: 14,
             question: "Before the course, Duncan bought himself some tennis",
             options: ["shoes.", "clothes.", "balls."],
-            correct: 2
+            correct: 0
           },
           {
             id: 15,
             question: "On the last evening, there was",
             options: ["a party.", "a film show.", "a tennis match."],
-            correct: 2
+            correct: 0
           }
         ]
       },
