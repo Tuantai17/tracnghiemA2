@@ -920,19 +920,19 @@ const testsData = [
             id: 12,
             question: "What doesn't Frank need to take?",
             options: ["trainers", "sports clothes", "drink"],
-            correct: 1
+            correct: 0
           },
           {
             id: 13,
             question: "The teacher needs to know",
             options: ["if people are beginners.", "how fit people are.", "people's age."],
-            correct: 1
+            correct: 0
           },
           {
             id: 14,
             question: "The normal price of classes is",
             options: ["£5.", "£6.", "£8."],
-            correct: 2
+            correct: 1
           },
           {
             id: 15,
@@ -1091,7 +1091,7 @@ const testsData = [
             id: 11,
             question: "Where is the new shop?",
             options: ["near the college", "outside the town centre", "opposite the newsagent's"],
-            correct: 1
+            correct: 2
           },
           {
             id: 12,
@@ -1109,13 +1109,13 @@ const testsData = [
             id: 14,
             question: "What days does the shop open?",
             options: ["Tuesday to Sunday", "every day", "Monday to Friday"],
-            correct: 2
+            correct: 0
           },
           {
             id: 15,
             question: "What should Suzy's friend do if she wants a job?",
             options: ["phone the manager", "go to the shop", "write a letter"],
-            correct: 2
+            correct: 1
           }
         ]
       },
@@ -1268,19 +1268,19 @@ const testsData = [
             id: 11,
             question: "Jenny was shown how to make the soup by",
             options: ["her aunt.", "her friend.", "her mother."],
-            correct: 1
+            correct: 2
           },
           {
             id: 12,
             question: "How has Jenny improved the soup?",
             options: ["She adds less water.", "She makes it thinner.", "She uses bigger cups."],
-            correct: 1
+            correct: 0
           },
           {
             id: 13,
             question: "To make it really good, Jenny adds",
             options: ["milk.", "butter.", "cream."],
-            correct: 1
+            correct: 0
           },
           {
             id: 14,
@@ -1292,7 +1292,7 @@ const testsData = [
             id: 15,
             question: "What will they eat next?",
             options: ["fruit cake", "pasta", "lemon chicken"],
-            correct: 2
+            correct: 1
           }
         ]
       },
@@ -1445,19 +1445,19 @@ const testsData = [
             id: 11,
             question: "Which building will the competition be in?",
             options: ["the school", "the town hall", "the university"],
-            correct: 1
+            correct: 2
           },
           {
             id: 12,
             question: "How has the team decided to get there?",
             options: ["They will catch a bus.", "They will walk.", "They will go on the underground."],
-            correct: 1
+            correct: 0
           },
           {
             id: 13,
             question: "The total number of questions in the quiz will be",
             options: ["five.", "fifteen.", "twenty-five."],
-            correct: 1
+            correct: 2
           },
           {
             id: 14,
@@ -1469,7 +1469,7 @@ const testsData = [
             id: 15,
             question: "Winners of the competition get",
             options: ["T-shirts.", "cinema tickets.", "a box of chocolates."],
-            correct: 2
+            correct: 1
           }
         ]
       },
@@ -1483,7 +1483,7 @@ const testsData = [
           title: "Summer holiday job",
           items: [
             { id: 0, label: "Type of job:", prefix: "", suffix: "", answer: "Farm worker", isExample: true },
-            { id: 16, label: "Time working day ends:", prefix: "", suffix: "", correct: "2" },
+            { id: 16, label: "Time working day ends:", prefix: "", suffix: "", correct: ["2", "2pm", "2.00", "2.00pm"] },
             { id: 17, label: "You need to be:", prefix: "", suffix: "and careful", correct: ["strong", "Strong"] },
             { id: 18, label: "You will earn:", prefix: "£", suffix: "a week", correct: "300" },
             { id: 19, label: "What you must pay for:", prefix: "", suffix: "", correct: ["Bus tickets", "bus tickets"] },
@@ -1491,7 +1491,7 @@ const testsData = [
           ]
         },
         questions: [
-          { id: 16, question: "Time working day ends:", correct: "2" },
+          { id: 16, question: "Time working day ends:", correct: ["2", "2pm", "2.00", "2.00pm"], displayCorrect: "2pm" },
           { id: 17, question: "You need to be:", correct: ["strong", "Strong"], displayCorrect: "strong" },
           { id: 18, question: "You will earn:", correct: "300" },
           { id: 19, question: "What you must pay for:", correct: ["Bus tickets", "bus tickets"], displayCorrect: "Bus tickets" },
